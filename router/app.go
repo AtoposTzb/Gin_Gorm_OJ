@@ -14,9 +14,11 @@ import (
 
 func InitRouter() *gin.Engine {
 	r := gin.Default()
+	//swagger路由
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	//路由
 	r.GET("/ping", service.Ping)
-	r.GET("/problem", service.GetProblemList)
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/problem-list", service.GetProblemList)
+	r.GET("/problem-detail", service.GetProblemDetail)
 	return r
 }

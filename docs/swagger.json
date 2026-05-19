@@ -4,7 +4,45 @@
         "contact": {}
     },
     "paths": {
-        "/problem": {
+        "/problem-detail": {
+            "get": {
+                "description": "获取问题详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "公共方法"
+                ],
+                "summary": "获取问题详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "problem identity",
+                        "name": "identity",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\\\"code\\\":200,\\\"data\\\":{\\\"count\\\":0,\\\"data\\\":[]}\\",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/problem-list": {
             "get": {
                 "description": "获取问题列表",
                 "consumes": [
@@ -12,6 +50,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "公共方法"
                 ],
                 "summary": "获取问题列表",
                 "parameters": [
@@ -31,6 +72,12 @@
                         "type": "string",
                         "description": "keyword",
                         "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "category_identity",
+                        "name": "category_identity",
                         "in": "query"
                     }
                 ],

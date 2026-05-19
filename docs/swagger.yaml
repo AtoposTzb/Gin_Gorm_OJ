@@ -1,7 +1,32 @@
 info:
   contact: {}
 paths:
-  /problem:
+  /problem-detail:
+    get:
+      consumes:
+      - application/json
+      description: 获取问题详情
+      parameters:
+      - description: problem identity
+        in: query
+        name: identity
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\'
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获取问题详情
+      tags:
+      - 公共方法
+  /problem-list:
     get:
       consumes:
       - application/json
@@ -19,6 +44,10 @@ paths:
         in: query
         name: keyword
         type: string
+      - description: category_identity
+        in: query
+        name: category_identity
+        type: string
       produces:
       - application/json
       responses:
@@ -32,4 +61,6 @@ paths:
             additionalProperties: true
             type: object
       summary: 获取问题列表
+      tags:
+      - 公共方法
 swagger: "2.0"

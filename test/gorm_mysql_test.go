@@ -17,7 +17,7 @@ func TestGormMySQL(t *testing.T) {
 		fmt.Println("连接数据库失败", err)
 		//t.Fatal("连接数据库失败", err)
 	}
-	var data = make([]*models.Problem, 0)
+	var data = make([]*models.ProblemBasic, 0)
 	err = db.Find(&data).Error
 	if err != nil {
 		t.Fatal("查询数据库失败", err)

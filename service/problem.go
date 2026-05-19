@@ -8,18 +8,22 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
+// GetProblemList
+// @Tags 公共方法
 // @Summary 获取问题列表
 // @Description 获取问题列表
 // @Param page query int false "page" "当前页码"
 // @Param size query int false "size" "每页数量"
 // @Param keyword query string false "keyword" "搜索关键词"
+// @Param category_identity query string false "category_identity" "分类的标识"
 // @Accept json
 // @Produce json
 // @Success 200 {string} json "{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\""
 // @Failure 500 {object} map[string]interface{}
-// @Router /problem [get]
+// @Router /problem-list [get]
 func GetProblemList(c *gin.Context) {
 	// 从请求参数中获取分页参数
 	// DefaultQuery获取查询参数page,默认值为define.DefaultPage,参数解释：page为当前页码,默认值为define.DefaultPage
@@ -35,9 +39,10 @@ func GetProblemList(c *gin.Context) {
 	var count int64
 
 	keyword := c.Query("keyword")
+	categoryIdentity := c.Query("category_identity")
 
-	data := make([]*models.Problem, 0)
-	tx := models.GetProblemList(keyword)
+	data := make([]*models.ProblemBasic, 0)
+	tx := models.GetProblemList(keyword, categoryIdentity)
 	err = tx.Count(&count).Offset(offset).Limit(size).Find(&data).Error
 	if err != nil {
 		log.Println("查询问题列表失败", err)
@@ -48,6 +53,49 @@ func GetProblemList(c *gin.Context) {
 			"count": count,
 			"data":  data,
 		},
+	})
+
+}
+
+// GetProblemDetail
+// @Tags 公共方法
+// @Summary 获取问题详情
+// @Description 获取问题详情
+// @Param identity query string false "problem identity" "问题的标识"
+// @Accept json
+// @Produce json
+// @Success 200 {string} json "{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\""
+// @Failure 500 {object} map[string]interface{}
+// @Router /problem-detail [get]
+func GetProblemDetail(c *gin.Context) {
+	identity := c.Query("identity")
+	if identity == "" {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 400,
+			"msg":  "identity is required",
+		})
+		return
+	}
+	problemBasic := new(models.ProblemBasic)
+	err := models.DB.Where("identity = ?", identity).Preload("Categories").
+		First(&problemBasic).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusOK, gin.H{
+				"code": -1,
+				"msg":  "问题不存在或已被删除",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"code": -1,
+			"msg":  "Get problem detail failed" + err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"data": problemBasic,
 	})
 
 }

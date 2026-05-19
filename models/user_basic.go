@@ -12,7 +12,7 @@ package models
 
 import "gorm.io/gorm"
 
-type User struct {
+type UserBasic struct {
 	gorm.Model        //用户表的模型,继承gorm.Model,有ID,CreatedAt,UpdatedAt,DeletedAt字段 MySql记得设置字段
 	Identity   string `gorm:"column:identity;type:varchar(36);" json:"identity"` //用户表的唯一标识符
 	Name       string `gorm:"column:name;type:varchar(255);" json:"name"`        //用户表的名称
@@ -21,6 +21,6 @@ type User struct {
 	Mail       string `gorm:"column:mail;type:varchar(100);" json:"mail"`        //用户表的邮箱
 }
 
-func (*User) TableName() string {
+func (*UserBasic) TableName() string {
 	return "user_basic"
 }

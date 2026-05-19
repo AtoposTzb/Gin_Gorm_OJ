@@ -63,4 +63,29 @@ paths:
       summary: 获取问题列表
       tags:
       - 公共方法
+  /user-detail:
+    get:
+      consumes:
+      - application/json
+      description: 获取用户详情
+      parameters:
+      - description: user identity
+        in: query
+        name: identity
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\'
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获取用户详情
+      tags:
+      - 公共方法
 swagger: "2.0"

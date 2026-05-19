@@ -16,9 +16,12 @@ func InitRouter() *gin.Engine {
 	r := gin.Default()
 	//swagger路由
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	//路由
+	//问题路由
 	r.GET("/ping", service.Ping)
 	r.GET("/problem-list", service.GetProblemList)
 	r.GET("/problem-detail", service.GetProblemDetail)
+
+	//用户路由
+	r.GET("/user-detail", service.GetUserDetail)
 	return r
 }

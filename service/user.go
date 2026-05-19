@@ -1,10 +1,12 @@
 package service
 
 import (
+	"Gin_Gorm_OJ/helper"
 	"Gin_Gorm_OJ/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // GetUserDetail 获取用户详情
@@ -24,6 +26,7 @@ func GetUserDetail(c *gin.Context) {
 			"code": -1,
 			"data": "用户唯一标识不能为空",
 		})
+		return
 	}
 	//开始查询用户详情
 	username := &models.UserBasic{}
@@ -41,5 +44,63 @@ func GetUserDetail(c *gin.Context) {
 		"code": 200,
 		"data": username,
 	})
+}
 
+// Login 登录
+// @Tags 公共方法
+// @Summary 登录
+// @Description 登录
+// @Param username formData string true "用户名"
+// @Param password formData string true "密码"
+// @Success 200 {string} json "{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\""
+// @Failure 500 {object} map[string]interface{}
+// @Router /login [post]
+func Login(c *gin.Context) {
+	username := c.PostForm("username")
+	password := c.PostForm("password")
+	if username == "" || password == "" {
+		c.JSON(http.StatusOK, gin.H{
+			"code": -1,
+			"data": "用户名或密码不能为空",
+		})
+		return
+	}
+	//md5 加密密码
+	password = helper.GeTMd5(password)
+	//fmt.Println(username, password)
+
+	//
+	data := &models.UserBasic{}
+	err := models.DB.Where("name = ? AND password = ?",
+		username, password).
+		First(&data).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusOK, gin.H{
+				"code": -1,
+				"data": "用户名或密码错误",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"code": -1,
+			"data": "Get UserBasic error" + err.Error(),
+		})
+		return
+	}
+	//生成token
+	tokenString, err := helper.GenerateToken(data.Identity, data.Name)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": -1,
+			"data": "GenerateToken error" + err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"data": map[string]interface{}{
+			"token": tokenString,
+		},
+	})
 }

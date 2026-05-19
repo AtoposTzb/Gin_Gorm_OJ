@@ -31,5 +31,9 @@
       -  在路由文件下导包记得go mod tidy，安装项目依赖。
       -  接口访问地址:`http://localhost:8080/swagger/index.html`
 
-
+## 安装JWT库
+   - 可以参考[go包仓库搜索jwt](https://pkg.go.dev/github.com/golang-jwt/jwt/v5)进行参考使用。
+   - 安装：`go get -u github.com/golang-jwt/jwt/v5`
+   - 导入：`import "github.com/golang-jwt/jwt/v5"`
+   - 见test文件夹测试代码“生成token”
 

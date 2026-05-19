@@ -6,20 +6,30 @@ paths:
       consumes:
       - application/json
       description: 获取问题列表
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: size
+        in: query
+        name: size
+        type: integer
+      - description: keyword
+        in: query
+        name: keyword
+        type: string
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: '{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\'
           schema:
-            additionalProperties: true
-            type: object
+            type: string
         "500":
           description: Internal Server Error
           schema:
             additionalProperties: true
             type: object
       summary: 获取问题列表
-      tags:
-      - 问题
 swagger: "2.0"

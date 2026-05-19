@@ -12,8 +12,6 @@ max_runtime	int			false	false	false				NULL	最大的运行时间							false	fa
 package models
 
 import (
-	"fmt"
-
 	"gorm.io/gorm"
 )
 
@@ -31,12 +29,8 @@ func (*Problem) TableName() string {
 	return "problem"
 }
 
-// 使用并打印数据库表
-func GetProblemList() []*Problem {
-	var data = make([]*Problem, 0)
-	err := DB.Find(&data).Error
-	if err != nil {
-		fmt.Println("查询数据库失败", err)
-	}
-	return data
+// 获取问题列表
+func GetProblemList(keyword string) *gorm.DB {
+	return DB.Model(new(Problem)).
+		Where("title like ? or content like ?", "%"+keyword+"%", "%"+keyword+"%")
 }

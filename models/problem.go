@@ -11,7 +11,11 @@ max_runtime	int			false	false	false				NULL	最大的运行时间							false	fa
 */
 package models
 
-import "gorm.io/gorm"
+import (
+	"fmt"
+
+	"gorm.io/gorm"
+)
 
 type Problem struct {
 	gorm.Model        //问题表的模型,继承gorm.Model,有ID,CreatedAt,UpdatedAt,DeletedAt字段
@@ -25,4 +29,14 @@ type Problem struct {
 
 func (*Problem) TableName() string {
 	return "problem"
+}
+
+// 使用并打印数据库表
+func GetProblemList() []*Problem {
+	var data = make([]*Problem, 0)
+	err := DB.Find(&data).Error
+	if err != nil {
+		fmt.Println("查询数据库失败", err)
+	}
+	return data
 }

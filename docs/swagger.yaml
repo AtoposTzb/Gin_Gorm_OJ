@@ -1,0 +1,25 @@
+info:
+  contact: {}
+paths:
+  /problem:
+    get:
+      consumes:
+      - application/json
+      description: 获取问题列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获取问题列表
+      tags:
+      - 问题
+swagger: "2.0"

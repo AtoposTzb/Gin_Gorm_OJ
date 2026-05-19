@@ -21,7 +21,15 @@
    - 本地clone仓库，vscode or traeIDE 打开项目目录
      - 初始化module，执行`go mod init gin_gorm_oj`命令
      - 可视化数据库工具Navicat Premium建表，创建数据库表结构,详见models文件夹-gorm的模型定义。
-   - 数据库配置，开始开发项目的实际功能。
+   - 数据库配置，继续整合swagger。
+
+## 整合Swagger
+   - 可以参考[Swagger官方github文档](https://github.com/swaggo/gin-swagger)进行整合。
+      -  安装:`go install github.com/swaggo/swag/cmd/swag@latest`
+      -  Go 项目根路径上运行 Swag,命令行输入:`swag init`
+      -  项目根路径下会生成一个docs文件夹，里面包含swagger.json文件。
+      -  在路由文件下导包记得go mod tidy，安装项目依赖。
+      -  接口访问地址:`http://localhost:8080/swagger/index.html`
 
 
 

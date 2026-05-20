@@ -104,3 +104,37 @@ func Login(c *gin.Context) {
 		},
 	})
 }
+
+// SendCode 发送验证码
+// @Tags 公共方法
+// @Summary 发送验证码
+// @Description 发送验证码
+// @Param email formData string true "邮箱"
+// @Success 200 {string} json "{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\""
+// @Failure 500 {object} map[string]interface{}
+// @Router /send-code [post]
+func SendCode(c *gin.Context) {
+	email := c.PostForm("email")
+	if email == "" {
+		c.JSON(http.StatusOK, gin.H{
+			"code": -1,
+			"data": "邮箱不能为空",
+		})
+		return
+	}
+	code := "123456" //这里写死验证码，实际应用中应该随机生成
+	err := helper.SendEmail(email, code)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": -1,
+			"data": "SendEmail error" + err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"data": map[string]interface{}{
+			"code": "验证码发送成功:" + code,
+		},
+	})
+}

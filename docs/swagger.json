@@ -138,6 +138,39 @@
                 }
             }
         },
+        "/send-code": {
+            "post": {
+                "description": "发送验证码",
+                "tags": [
+                    "公共方法"
+                ],
+                "summary": "发送验证码",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "邮箱",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\\\"code\\\":200,\\\"data\\\":{\\\"count\\\":0,\\\"data\\\":[]}\\",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/submit-list": {
             "get": {
                 "description": "获取提交记录",

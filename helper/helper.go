@@ -2,9 +2,12 @@ package helper
 
 import (
 	"crypto/md5"
+	"crypto/tls"
 	"fmt"
+	"net/smtp"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/jordan-wright/email"
 )
 
 type UserClaims struct {
@@ -52,4 +55,16 @@ func AnalyseToken(tokenString string) (*UserClaims, error) {
 		return nil, fmt.Errorf("unknown claims type")
 	}
 
+}
+
+// 发送验证码
+func SendEmail(toUserEmail, code string) error {
+	// 测试发送验证码
+	e := email.NewEmail()
+	e.From = "OJ测试网站 <t1912160135@163.com>"
+	e.To = []string{toUserEmail}
+	e.Subject = "验证码发送测试"
+	e.HTML = []byte("您的验证码<b>" + code + "</b>")
+	return e.SendWithTLS("smtp.163.com:465", smtp.PlainAuth("", "t1912160135@163.com", "网易授权码", "smtp.163.com"),
+		&tls.Config{InsecureSkipVerify: true, ServerName: "smtp.163.com"})
 }

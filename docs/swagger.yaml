@@ -90,6 +90,28 @@ paths:
       summary: 获取问题列表
       tags:
       - 公共方法
+  /send-code:
+    post:
+      description: 发送验证码
+      parameters:
+      - description: 邮箱
+        in: formData
+        name: email
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\'
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 发送验证码
+      tags:
+      - 公共方法
   /submit-list:
     get:
       consumes:

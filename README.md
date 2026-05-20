@@ -37,3 +37,10 @@
    - 导入：`import "github.com/golang-jwt/jwt/v5"`
    - 见test文件夹测试代码“生成token”
 
+## 发送验证码
+   - 可以参考[开源三方email库](https://github.com/jordan-wright/email)进行使用，也可以使用go包的email库。
+   - 安装：`go get github.com/jordan-wright/email`
+   - 记得：`go mod tidy`
+   - 见test文件夹测试代码“发送验证码”
+
+

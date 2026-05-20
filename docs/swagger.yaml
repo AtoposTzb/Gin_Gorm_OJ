@@ -1,6 +1,134 @@
 info:
   contact: {}
 paths:
+  /category-create:
+    post:
+      description: 创建分类
+      parameters:
+      - description: authorization
+        in: header
+        name: authorization
+        required: true
+        type: string
+      - description: name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: problem_ids
+        in: formData
+        name: problem_ids
+        type: integer
+      responses:
+        "200":
+          description: '{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\'
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 创建分类
+      tags:
+      - 管理员私有方法
+  /category-delete:
+    delete:
+      description: 删除分类
+      parameters:
+      - description: authorization
+        in: header
+        name: authorization
+        required: true
+        type: string
+      - description: identity
+        in: query
+        name: identity
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\'
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 删除分类
+      tags:
+      - 管理员私有方法
+  /category-list:
+    get:
+      description: 获取分类列表
+      parameters:
+      - description: authorization
+        in: header
+        name: authorization
+        required: true
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: size
+        in: query
+        name: size
+        type: integer
+      - description: keyword
+        in: query
+        name: keyword
+        type: string
+      responses:
+        "200":
+          description: '{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\'
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获取分类列表
+      tags:
+      - 管理员私有方法
+  /category-update:
+    put:
+      description: 更新分类
+      parameters:
+      - description: authorization
+        in: header
+        name: authorization
+        required: true
+        type: string
+      - description: identity
+        in: formData
+        name: identity
+        required: true
+        type: string
+      - description: name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: ParentId
+        in: formData
+        name: ParentId
+        type: integer
+      responses:
+        "200":
+          description: '{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\'
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 更新分类
+      tags:
+      - 管理员私有方法
   /login:
     post:
       description: 登录
@@ -80,7 +208,7 @@ paths:
             type: object
       summary: 创建问题
       tags:
-      - 私有方法
+      - 管理员私有方法
   /problem-detail:
     get:
       consumes:

@@ -37,6 +37,14 @@ func InitRouter() *gin.Engine {
 	//私有方法
 	//管理员私有方法:创建问题
 	r.POST("/problem-create", middlewares.AuthAdminCheck, service.CreateProblem) //创建问题，中间件检查用户是否是管理员
+	//分类列表
+	r.GET("/category-list", middlewares.AuthAdminCheck, service.GetCategoryList)
+	//创建分类
+	r.POST("/category-create", middlewares.AuthAdminCheck, service.CreateCategory)
+	//更新分类
+	r.PUT("/category-update", middlewares.AuthAdminCheck, service.UpdateCategory)
+	//删除分类
+	r.DELETE("/category-delete", middlewares.AuthAdminCheck, service.DeleteCategory)
 
 	return r
 }

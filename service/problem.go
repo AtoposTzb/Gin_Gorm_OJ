@@ -122,7 +122,7 @@ func GetProblemList(c *gin.Context) {
 */
 
 // CreateProblem
-// @Tags 私有方法
+// @Tags 管理员私有方法
 // @Summary 创建问题
 // @Description 创建问题
 // @Param authorization header string true "authorization"

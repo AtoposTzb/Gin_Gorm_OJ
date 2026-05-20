@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/smtp"
+	"os"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -84,4 +85,24 @@ func CreateCode() string {
 	//生成6位随机数
 	code := fmt.Sprintf("%06d", rand.Intn(1000000))
 	return code
+}
+
+// 代码保存的方法
+func SaveCode(code []byte) (string, error) {
+	dirName := "code/" + CreateCode() // 生成随机目录名
+	path := dirName + "/main.go"      // 生成随机文件名
+	err := os.MkdirAll(dirName, 0755) // 创建目录  0755 表示目录权限为 rwxr-xr-x
+	if err != nil {
+		return "", fmt.Errorf("create dir failed")
+	}
+	file, err := os.Create(path) // 创建文件 file是文件指针
+	if err != nil {
+		return "", fmt.Errorf("create file failed")
+	}
+	file.Write(code) // 写入文件
+	if err != nil {
+		return "", fmt.Errorf("write file failed")
+	}
+	defer file.Close()
+	return path, nil // 返回文件路径
 }

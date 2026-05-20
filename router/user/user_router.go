@@ -1,6 +1,7 @@
 package user
 
 import (
+	"Gin_Gorm_OJ/middlewares"
 	"Gin_Gorm_OJ/service"
 
 	"github.com/gin-gonic/gin"
@@ -22,4 +23,6 @@ func InitUserRouter(r *gin.Engine) {
 	userGroup.GET("/rank-list", service.GetRankList)
 	//提交记录
 	userGroup.GET("/submit-list", service.GetSubmitList)
+	//提交问题
+	userGroup.POST("/submit-problem", middlewares.AuthUserCheck, service.SubmitProblem)
 }

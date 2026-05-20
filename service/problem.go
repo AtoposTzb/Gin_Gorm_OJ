@@ -9,10 +9,16 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
+
+// normalizeTestCaseInput 统一测试用例输入格式：将逗号分隔转换为空格分隔
+func normalizeTestCaseInput(input string) string {
+	return strings.ReplaceAll(input, ",", " ")
+}
 
 // GetProblemList
 // @Tags 公共方法
@@ -173,27 +179,46 @@ func CreateProblem(c *gin.Context) {
 	//处理测试用例
 	testCaseBasics := make([]*models.TestCase, 0)
 	for _, tc := range testCases {
-		//例子{"input":"1,2\n","output":"3\n"}
-		caseMap := map[string]string{}
-		err := json.Unmarshal([]byte(tc), &caseMap) //这里需要转换为byte类型 ，然后解码为map[string]string
-		if err != nil {
-			log.Println("解析测试用例失败", err)
-			continue
+		// 处理 Swagger 可能将多个 JSON 对象拼接成单个字符串的情况
+		var testCaseMaps []map[string]string
+
+		// 优先尝试解析为 JSON 数组
+		var arr []map[string]string
+		if err := json.Unmarshal([]byte(tc), &arr); err == nil {
+			testCaseMaps = arr
+		} else {
+			// 尝试添加中括号后解析
+			wrapped := "[" + tc + "]"
+			if err := json.Unmarshal([]byte(wrapped), &arr); err == nil {
+				testCaseMaps = arr
+			} else {
+				// 尝试解析为单个 JSON 对象
+				caseMap := map[string]string{}
+				if err := json.Unmarshal([]byte(tc), &caseMap); err == nil {
+					testCaseMaps = append(testCaseMaps, caseMap)
+				} else {
+					log.Println("解析测试用例失败", err)
+					continue
+				}
+			}
 		}
-		if _, ok := caseMap["input"]; !ok {
-			log.Println("测试用例格式错误", tc)
-			continue
+
+		for _, caseMap := range testCaseMaps {
+			if _, ok := caseMap["input"]; !ok {
+				log.Println("测试用例格式错误，缺少 input")
+				continue
+			}
+			if _, ok := caseMap["output"]; !ok {
+				log.Println("测试用例格式错误，缺少 output")
+				continue
+			}
+			testCaseBasics = append(testCaseBasics, &models.TestCase{
+				Identity:        helper.GenerateUUID(),
+				ProblemIdentity: identity,
+				Input:           normalizeTestCaseInput(caseMap["input"]),
+				Output:          caseMap["output"],
+			})
 		}
-		if _, ok := caseMap["output"]; !ok {
-			log.Println("测试用例格式错误", tc)
-			continue
-		}
-		testCaseBasics = append(testCaseBasics, &models.TestCase{
-			Identity:        helper.GenerateUUID(),
-			ProblemIdentity: identity,
-			Input:           caseMap["input"],
-			Output:          caseMap["output"],
-		})
 	}
 	data.TestCases = testCaseBasics //往问题中添加测试用例
 
@@ -350,7 +375,7 @@ func UpdateProblem(c *gin.Context) {
 			tcs = append(tcs, &models.TestCase{
 				Identity:        helper.GenerateUUID(),
 				ProblemIdentity: identity,
-				Input:           caseMap["input"],
+				Input:           normalizeTestCaseInput(caseMap["input"]),
 				Output:          caseMap["output"],
 			})
 		}

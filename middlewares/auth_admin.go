@@ -20,7 +20,7 @@ func AuthAdminCheck(c *gin.Context) {
 		c.Abort() //中断请求，防止继续执行后续的中间件
 		return
 	}
-	if userClaim.IsAdmin != 1 {
+	if userClaim.IsAdmin != 1 || userClaim == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"code": 401,
 			"data": "未授权，非管理员权限",

@@ -491,4 +491,37 @@ paths:
       summary: 获取提交记录
       tags:
       - 公共方法
+  /user/submit-problem:
+    post:
+      description: 提交问题
+      parameters:
+      - description: authorization
+        in: header
+        name: authorization
+        required: true
+        type: string
+      - description: 问题的标识
+        in: query
+        name: problem_identity
+        required: true
+        type: string
+      - description: 代码
+        in: body
+        name: code
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: '{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\'
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 提交问题
+      tags:
+      - 用户私有方法
 swagger: "2.0"

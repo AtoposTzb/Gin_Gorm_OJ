@@ -15,12 +15,14 @@ import (
 )
 
 type ProblemBasic struct {
-	gorm.Model        //问题表的模型,继承gorm.Model,有ID,CreatedAt,UpdatedAt,DeletedAt字段
-	Identity   string `gorm:"column:identity;type:varchar(36);" json:"identity"`   //问题表的唯一标识符
-	Title      string `gorm:"column:title;type:varchar(255);" json:"title"`        //问题表的标题
-	Content    string `gorm:"column:content;type:text;" json:"content"`            //题目描述
-	MaxMem     int    `gorm:"column:max_mem;type:int(11);" json:"max_mem"`         //最大的运行内存
-	MaxRuntime int    `gorm:"column:max_runtime;type:int(11);" json:"max_runtime"` //最大的运行时间
+	gorm.Model           //问题表的模型,继承gorm.Model,有ID,CreatedAt,UpdatedAt,DeletedAt字段
+	Identity      string `gorm:"column:identity;type:varchar(36);" json:"identity"`     //问题表的唯一标识符
+	Title         string `gorm:"column:title;type:varchar(255);" json:"title"`          //问题表的标题
+	Content       string `gorm:"column:content;type:text;" json:"content"`              //题目描述
+	MaxMem        int    `gorm:"column:max_mem;type:int(11);" json:"max_mem"`           //最大的运行内存
+	MaxRuntime    int    `gorm:"column:max_runtime;type:int(11);" json:"max_runtime"`   //最大的运行时间
+	SubmitCount   int    `gorm:"column:submit_count;type:int;" json:"submit_count"`     //提交记录数量
+	CompleteCount int    `gorm:"column:complete_count;type:int;" json:"complete_count"` //完成题目数量
 	// many to many 关联
 	Categories []*CategoryBasic `gorm:"many2many:problem_category;joinForeignKey:problem_id;joinReferences:category_id" json:"categories"`
 	TestCases  []*TestCase      `gorm:"foreignKey:problem_identity;references:identity" json:"test_cases"`

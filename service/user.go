@@ -1,10 +1,12 @@
 package service
 
 import (
+	"Gin_Gorm_OJ/define"
 	"Gin_Gorm_OJ/helper"
 	"Gin_Gorm_OJ/models"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -246,6 +248,46 @@ func Register(c *gin.Context) {
 		"code": 200,
 		"data": map[string]interface{}{
 			"token": tokenString,
+		},
+	})
+
+}
+
+// GetRankList 获取排名列表
+// @Tags 公共方法
+// @Summary 获取排名列表
+// @Description 获取排名列表
+// @Param page query int false "page" "当前页码"
+// @Param size query int false "size" "每页数量"
+// @Success 200 {string} json "{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\""
+// @Failure 500 {object} map[string]interface{}
+// @Router /rank-list [get]
+func GetRankList(c *gin.Context) {
+	size, _ := strconv.Atoi(c.DefaultQuery("size", define.DefaultSize))
+	page, err := strconv.Atoi(c.DefaultQuery("page", define.DefaultPage))
+	if err != nil {
+		log.Println("转换分页参数失败", err)
+	}
+	//计算页面偏移量
+	offset := (page - 1) * size
+	//查询数据库
+	var count int64
+	list := make([]models.UserBasic, 0)
+	err = models.DB.Model(&models.UserBasic{}).Count(&count).
+		Order("complete_count desc,submit_count asc"). //按完成题目数量降序，提交记录数量升序
+		Offset(offset).Limit(size).Find(&list).Error
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": -1,
+			"msg":  "查询排名失败" + err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"data": map[string]interface{}{
+			"count": count,
+			"data":  list,
 		},
 	})
 

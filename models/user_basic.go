@@ -13,12 +13,14 @@ package models
 import "gorm.io/gorm"
 
 type UserBasic struct {
-	gorm.Model        //用户表的模型,继承gorm.Model,有ID,CreatedAt,UpdatedAt,DeletedAt字段 MySql记得设置字段
-	Identity   string `gorm:"column:identity;type:varchar(36);" json:"identity"` //用户表的唯一标识符
-	Name       string `gorm:"column:name;type:varchar(255);" json:"name"`        //用户表的名称
-	Password   string `gorm:"column:password;type:varchar(32);" json:"password"` //用户表的密码
-	Phone      string `gorm:"column:phone;type:varchar(20);" json:"phone"`       //用户表的手机号
-	Mail       string `gorm:"column:mail;type:varchar(100);" json:"mail"`        //用户表的邮箱
+	gorm.Model           //用户表的模型,继承gorm.Model,有ID,CreatedAt,UpdatedAt,DeletedAt字段 MySql记得设置字段
+	Identity      string `gorm:"column:identity;type:varchar(36);" json:"identity"`     //用户表的唯一标识符
+	Name          string `gorm:"column:name;type:varchar(255);" json:"name"`            //用户表的名称
+	Password      string `gorm:"column:password;type:varchar(32);" json:"password"`     //用户表的密码
+	Phone         string `gorm:"column:phone;type:varchar(20);" json:"phone"`           //用户表的手机号
+	Mail          string `gorm:"column:mail;type:varchar(100);" json:"mail"`            //用户表的邮箱
+	SubmitCount   int    `gorm:"column:submit_count;type:int;" json:"submit_count"`     //提交记录数量
+	CompleteCount int    `gorm:"column:complete_count;type:int;" json:"complete_count"` //完成题目数量
 }
 
 func (*UserBasic) TableName() string {

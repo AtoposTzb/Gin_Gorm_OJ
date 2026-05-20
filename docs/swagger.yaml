@@ -90,6 +90,31 @@ paths:
       summary: 获取问题列表
       tags:
       - 公共方法
+  /rank-list:
+    get:
+      description: 获取排名列表
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: size
+        in: query
+        name: size
+        type: integer
+      responses:
+        "200":
+          description: '{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\'
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获取排名列表
+      tags:
+      - 公共方法
   /register:
     post:
       description: 用户注册

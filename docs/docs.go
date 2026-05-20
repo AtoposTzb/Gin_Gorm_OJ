@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/category-create": {
+        "/admin/category-create": {
             "post": {
                 "description": "创建分类",
                 "tags": [
@@ -61,7 +61,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/category-delete": {
+        "/admin/category-delete": {
             "delete": {
                 "description": "删除分类",
                 "tags": [
@@ -101,7 +101,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/category-list": {
+        "/admin/category-list": {
             "get": {
                 "description": "获取分类列表",
                 "tags": [
@@ -152,7 +152,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/category-update": {
+        "/admin/category-update": {
             "put": {
                 "description": "更新分类",
                 "tags": [
@@ -205,47 +205,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/login": {
-            "post": {
-                "description": "登录",
-                "tags": [
-                    "公共方法"
-                ],
-                "summary": "登录",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "用户名",
-                        "name": "username",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "密码",
-                        "name": "password",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "{\\\"code\\\":200,\\\"data\\\":{\\\"count\\\":0,\\\"data\\\":[]}\\",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
-        "/problem-create": {
+        "/admin/problem-create": {
             "post": {
                 "description": "创建问题",
                 "consumes": [
@@ -294,12 +254,107 @@ const docTemplate = `{
                     },
                     {
                         "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
                         "description": "category_ids",
                         "name": "category_ids",
                         "in": "formData"
                     },
                     {
                         "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "test_cases",
+                        "name": "test_cases",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\\\"code\\\":200,\\\"data\\\":{\\\"count\\\":0,\\\"data\\\":[]}\\",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/problem-update": {
+            "put": {
+                "description": "更新问题",
+                "tags": [
+                    "管理员私有方法"
+                ],
+                "summary": "更新问题",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "authorization",
+                        "name": "authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "identity",
+                        "name": "identity",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "title",
+                        "name": "title",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "content",
+                        "name": "content",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "max_mem",
+                        "name": "max_mem",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "max_runtime",
+                        "name": "max_runtime",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "category_ids",
+                        "name": "category_ids",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
                         "description": "test_cases",
                         "name": "test_cases",
                         "in": "formData",
@@ -417,7 +472,85 @@ const docTemplate = `{
                 }
             }
         },
-        "/rank-list": {
+        "/user/detail": {
+            "get": {
+                "description": "获取用户详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "公共方法"
+                ],
+                "summary": "获取用户详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user identity",
+                        "name": "identity",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\\\"code\\\":200,\\\"data\\\":{\\\"count\\\":0,\\\"data\\\":[]}\\",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/user/login": {
+            "post": {
+                "description": "登录",
+                "tags": [
+                    "公共方法"
+                ],
+                "summary": "登录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户名",
+                        "name": "username",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "密码",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\\\"code\\\":200,\\\"data\\\":{\\\"count\\\":0,\\\"data\\\":[]}\\",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/user/rank-list": {
             "get": {
                 "description": "获取排名列表",
                 "tags": [
@@ -455,7 +588,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/register": {
+        "/user/register": {
             "post": {
                 "description": "用户注册",
                 "tags": [
@@ -515,7 +648,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/send-code": {
+        "/user/send-code": {
             "post": {
                 "description": "发送验证码",
                 "tags": [
@@ -548,7 +681,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/submit-list": {
+        "/user/submit-list": {
             "get": {
                 "description": "获取提交记录",
                 "consumes": [
@@ -590,44 +723,6 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "status",
                         "name": "status",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "{\\\"code\\\":200,\\\"data\\\":{\\\"count\\\":0,\\\"data\\\":[]}\\",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
-        "/user-detail": {
-            "get": {
-                "description": "获取用户详情",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "公共方法"
-                ],
-                "summary": "获取用户详情",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "user identity",
-                        "name": "identity",
                         "in": "query"
                     }
                 ],

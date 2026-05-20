@@ -5,6 +5,7 @@ import (
 	"Gin_Gorm_OJ/helper"
 	"Gin_Gorm_OJ/models"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
@@ -130,13 +131,13 @@ func GetProblemList(c *gin.Context) {
 // @Param content formData string true "content" "问题的描述"
 // @Param max_mem formData int false "max_mem" "最大的运行内存"
 // @Param max_runtime formData int false "max_runtime" "最大的运行时间"
-// @Param category_ids formData array false "category_ids" "分类的标识"
-// @Param test_cases formData array true "test_cases" "测试用例"
+// @Param category_ids formData []string false "category_ids" collectionForm("multi")
+// @Param test_cases formData []string true "test_cases" collectionForm("multi")
 // @Accept multipart/form-data
 // @Produce json
 // @Success 200 {string} json "{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\""
 // @Failure 500 {object} map[string]interface{}
-// @Router /problem-create [post]
+// @Router /admin/problem-create [post]
 func CreateProblem(c *gin.Context) {
 	title := c.PostForm("title")
 	content := c.PostForm("content")
@@ -153,6 +154,7 @@ func CreateProblem(c *gin.Context) {
 	}
 	identity := helper.GenerateUUID()
 	data := models.ProblemBasic{
+		Identity:   identity,
 		Title:      title,
 		Content:    content,
 		MaxMem:     maxMem,
@@ -206,5 +208,173 @@ func CreateProblem(c *gin.Context) {
 		"data": map[string]interface{}{
 			"identity": identity,
 		},
+	})
+}
+
+// UpdateProblem
+// @Tags 管理员私有方法
+// @Summary 更新问题
+// @Description 更新问题
+// @Param authorization header string true "authorization"
+// @Param identity formData string true "identity" "问题的标识"
+// @Param title formData string true "title" "问题的标题"
+// @Param content formData string true "content" "问题的描述"
+// @Param max_mem formData int false "max_mem" "最大的运行内存"
+// @Param max_runtime formData int false "max_runtime" "最大的运行时间"
+// @Param category_ids formData []string false "category_ids" collectionForm("multi")
+// @Param test_cases formData []string true "test_cases" collectionForm("multi")
+// @Success 200 {string} json "{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\""
+// @Failure 500 {object} map[string]interface{}
+// @Router /admin/problem-update [put]
+func UpdateProblem(c *gin.Context) {
+	identity := c.PostForm("identity")
+	title := c.PostForm("title")
+	content := c.PostForm("content")
+	maxMem, _ := strconv.Atoi(c.PostForm("max_mem"))
+	maxRuntime, _ := strconv.Atoi(c.PostForm("max_runtime"))
+	categoryIds := c.PostFormArray("category_ids")
+	testCases := c.PostFormArray("test_cases")
+	log.Printf("categoryIds: %v, testCases: %v", categoryIds, testCases)
+	if identity == "" || title == "" || content == "" || maxMem == 0 || maxRuntime == 0 || len(categoryIds) == 0 || len(testCases) == 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 400,
+			"msg":  "参数不能为空",
+		})
+		return
+	}
+	if err := models.DB.Transaction(func(tx *gorm.DB) error { //事务操作-这样可以确保所有操作要么都成功，要么都失败
+		//问题信息保存 problem_basic
+		problemBasic := &models.ProblemBasic{
+			Identity:   identity,
+			Title:      title,
+			Content:    content,
+			MaxMem:     maxMem,
+			MaxRuntime: maxRuntime,
+		}
+		err := tx.Where("identity=?", identity).Updates(problemBasic).Error
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"code": 400,
+				"msg":  "更新问题失败" + err.Error(),
+			})
+			return err
+		}
+		//查询问题详情
+		err = tx.Where("identity=?", identity).Find(&problemBasic).Error
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"code": 400,
+				"msg":  "查询问题详情失败" + err.Error(),
+			})
+			return err
+		}
+		//关联问题分类的保存 problem_category
+		//1.删除已存在的关联关系
+		err = tx.Delete(&models.ProblemCategory{}, "problem_id=?", problemBasic.ID).Error
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"code": 400,
+				"msg":  "删除问题分类失败" + err.Error(),
+			})
+			return err
+		}
+		//2.添加新的关联关系
+		CateGoryBasics := make([]*models.ProblemCategory, 0)
+		for _, id := range categoryIds {
+			categoryID, _ := strconv.Atoi(id)
+			CateGoryBasics = append(CateGoryBasics, &models.ProblemCategory{
+				ProblemID:  int(problemBasic.ID),
+				CategoryID: categoryID, //分类的标识,遍历categoryIds,将每个分类的标识转换为整数
+			})
+		}
+		problemBasic.ProblemCategories = CateGoryBasics
+		//3.写入数据库
+		if len(CateGoryBasics) > 0 { //ORM 的 Create 方法不接受空切片，如果 categoryIds 解析后 CateGoryBasics 为空就会报错 "empty slice found"。
+			err = tx.Create(&CateGoryBasics).Error
+			if err != nil {
+				c.JSON(http.StatusOK, gin.H{
+					"code": 400,
+					"msg":  "添加问题分类失败" + err.Error(),
+				})
+				return err
+			}
+		}
+		//关联问题测试用例的保存 test_case
+		//1.删除已经存在的关联关系
+		err = tx.Where("problem_identity=?", identity).Delete(new(models.TestCase)).Error
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"code": 400,
+				"msg":  "删除测试用例失败" + err.Error(),
+			})
+			return err
+		}
+		//2.增加新的关联关系
+		tcs := make([]*models.TestCase, 0)
+
+		// 处理 testCases：Swagger 可能发送单个 JSON 数组字符串或多个独立的 JSON 对象
+		var testCaseMaps []map[string]string
+
+		for _, tc := range testCases {
+			// 优先尝试解析为 JSON 数组（处理 Swagger 发送的单个字符串）
+			var arr []map[string]string
+			if err := json.Unmarshal([]byte(tc), &arr); err == nil {
+				testCaseMaps = append(testCaseMaps, arr...)
+				continue
+			}
+
+			// 如果失败，尝试添加中括号后解析（Swagger 可能发送缺少外层 [] 的字符串）
+			wrapped := "[" + tc + "]"
+			if err := json.Unmarshal([]byte(wrapped), &arr); err == nil {
+				testCaseMaps = append(testCaseMaps, arr...)
+				continue
+			}
+
+			// 失败则尝试解析为单个 JSON 对象
+			caseMap := map[string]string{}
+			if err := json.Unmarshal([]byte(tc), &caseMap); err == nil {
+				testCaseMaps = append(testCaseMaps, caseMap)
+				continue
+			}
+
+			log.Printf("无法解析测试用例: %q", tc)
+		}
+
+		for _, caseMap := range testCaseMaps {
+			if _, ok := caseMap["input"]; !ok {
+				return errors.New("缺少测试输入参数")
+			}
+			if _, ok := caseMap["output"]; !ok {
+				return errors.New("缺少测试输出参数")
+			}
+			tcs = append(tcs, &models.TestCase{
+				Identity:        helper.GenerateUUID(),
+				ProblemIdentity: identity,
+				Input:           caseMap["input"],
+				Output:          caseMap["output"],
+			})
+		}
+
+		//3.写入数据库
+		if len(tcs) > 0 {
+			err = tx.Create(&tcs).Error
+			if err != nil {
+				c.JSON(http.StatusOK, gin.H{
+					"code": 400,
+					"msg":  "添加测试用例失败" + err.Error(),
+				})
+				return err
+			}
+		}
+
+		return nil
+
+	}); err != nil {
+		log.Println("更新问题失败", err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"msg":  "更新问题成功",
 	})
 }

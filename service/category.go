@@ -21,7 +21,7 @@ import (
 // @Param keyword query string false "keyword" "搜索关键词"
 // @Success 200 {string} json "{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\""
 // @Failure 500 {object} map[string]interface{}
-// @Router /category-list [get]
+// @Router /admin/category-list [get]
 func GetCategoryList(c *gin.Context) {
 	size, _ := strconv.Atoi(c.DefaultQuery("size", define.DefaultSize))
 	page, err := strconv.Atoi(c.DefaultQuery("page", define.DefaultPage))
@@ -68,7 +68,7 @@ func GetCategoryList(c *gin.Context) {
 // @Param problem_ids formData int false "problem_ids" "分类的标识列表"
 // @Success 200 {string} json "{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\""
 // @Failure 500 {object} map[string]interface{}
-// @Router /category-create [post]
+// @Router /admin/category-create [post]
 func CreateCategory(c *gin.Context) {
 	name := c.PostForm("name")
 	problemIds, _ := strconv.Atoi(c.PostForm("problem_ids"))
@@ -104,18 +104,18 @@ func CreateCategory(c *gin.Context) {
 // @Param ParentId formData int false "ParentId" "分类的父级ID"
 // @Success 200 {string} json "{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\""
 // @Failure 500 {object} map[string]interface{}
-// @Router /category-update [put]
+// @Router /admin/category-update [put]
 func UpdateCategory(c *gin.Context) {
 	identity := c.PostForm("identity")
 	name := c.PostForm("name")
 	parentId, _ := strconv.Atoi(c.PostForm("ParentId"))
-	// if identity == "" || name == "" {
-	// 	c.JSON(http.StatusOK, gin.H{
-	// 		"code": -1,
-	// 		"msg":  "分类的标识、名称不能为空",
-	// 	})
-	// 	return
-	// }
+	if identity == "" || name == "" {
+		c.JSON(http.StatusOK, gin.H{
+			"code": -1,
+			"msg":  "分类的标识、名称不能为空",
+		})
+		return
+	}
 	category := &models.CategoryBasic{
 		Identity: identity,
 		Name:     name,
@@ -148,7 +148,7 @@ func UpdateCategory(c *gin.Context) {
 // @Param identity query string true "identity" "分类的标识"
 // @Success 200 {string} json "{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\""
 // @Failure 500 {object} map[string]interface{}
-// @Router /category-delete [delete]
+// @Router /admin/category-delete [delete]
 func DeleteCategory(c *gin.Context) {
 	identity := c.Query("identity")
 	if identity == "" {

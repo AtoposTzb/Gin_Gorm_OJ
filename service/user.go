@@ -23,7 +23,7 @@ import (
 // @Produce json
 // @Success 200 {string} json "{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\""
 // @Failure 500 {object} map[string]interface{}
-// @Router /user-detail [get]
+// @Router /user/detail [get]
 func GetUserDetail(c *gin.Context) {
 	identity := c.Query("identity")
 	if identity == "" {
@@ -59,7 +59,7 @@ func GetUserDetail(c *gin.Context) {
 // @Param password formData string true "密码"
 // @Success 200 {string} json "{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\""
 // @Failure 500 {object} map[string]interface{}
-// @Router /login [post]
+// @Router /user/login [post]
 func Login(c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
@@ -117,7 +117,7 @@ func Login(c *gin.Context) {
 // @Param email formData string true "邮箱"
 // @Success 200 {string} json "{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\""
 // @Failure 500 {object} map[string]interface{}
-// @Router /send-code [post]
+// @Router /user/send-code [post]
 func SendCode(c *gin.Context) {
 	email := c.PostForm("email")
 	if email == "" {
@@ -162,7 +162,7 @@ func SendCode(c *gin.Context) {
 // @Param phone formData string false "手机号"
 // @Success 200 {string} json "{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\""
 // @Failure 500 {object} map[string]interface{}
-// @Router /register [post]
+// @Router /user/register [post]
 func Register(c *gin.Context) {
 	email := c.PostForm("email")
 	userCode := c.PostForm("code")
@@ -261,7 +261,7 @@ func Register(c *gin.Context) {
 // @Param size query int false "size" "每页数量"
 // @Success 200 {string} json "{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\""
 // @Failure 500 {object} map[string]interface{}
-// @Router /rank-list [get]
+// @Router /user/rank-list [get]
 func GetRankList(c *gin.Context) {
 	size, _ := strconv.Atoi(c.DefaultQuery("size", define.DefaultSize))
 	page, err := strconv.Atoi(c.DefaultQuery("page", define.DefaultPage))

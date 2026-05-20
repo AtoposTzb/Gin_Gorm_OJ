@@ -23,7 +23,7 @@ import (
 // @Produce json
 // @Success 200 {string} json "{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\""
 // @Failure 500 {object} map[string]interface{}
-// @Router /submit-list [get]
+// @Router /user/submit-list [get]
 func GetSubmitList(c *gin.Context) {
 	size, _ := strconv.Atoi(c.DefaultQuery("size", define.DefaultSize))
 	page, err := strconv.Atoi(c.DefaultQuery("page", define.DefaultPage))

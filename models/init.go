@@ -3,11 +3,13 @@ package models
 import (
 	"fmt"
 
+	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-var DB = Init() // 数据库连接，全局变量，用于在其他文件中使用
+var DB = Init()       // 数据库连接，全局变量，用于在其他文件中使用
+var RDB = InitRedis() // Redis连接，全局变量，用于在其他文件中使用
 
 // 初始化数据库模型
 func Init() *gorm.DB {
@@ -19,4 +21,12 @@ func Init() *gorm.DB {
 	}
 	return db
 
+}
+
+func InitRedis() *redis.Client {
+	return redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
 }

@@ -4,9 +4,11 @@ import (
 	"crypto/md5"
 	"crypto/tls"
 	"fmt"
+	"math/rand"
 	"net/smtp"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"github.com/jordan-wright/email"
 )
 
@@ -63,8 +65,21 @@ func SendEmail(toUserEmail, code string) error {
 	e := email.NewEmail()
 	e.From = "OJ测试网站 <t1912160135@163.com>"
 	e.To = []string{toUserEmail}
-	e.Subject = "验证码发送测试"
+	e.Subject = "验证码已发送"
 	e.HTML = []byte("您的验证码<b>" + code + "</b>")
-	return e.SendWithTLS("smtp.163.com:465", smtp.PlainAuth("", "t1912160135@163.com", "网易授权码", "smtp.163.com"),
+	return e.SendWithTLS("smtp.163.com:465", smtp.PlainAuth("", "t1912160135@163.com", "JDTbq34RedgAkFMu", "smtp.163.com"),
 		&tls.Config{InsecureSkipVerify: true, ServerName: "smtp.163.com"})
+}
+
+// 生成uuid
+// 生成唯一标识
+func GenerateUUID() string {
+	return uuid.New().String()
+}
+
+// 随机验证码
+func CreateCode() string {
+	//生成6位随机数
+	code := fmt.Sprintf("%06d", rand.Intn(1000000))
+	return code
 }

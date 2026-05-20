@@ -43,4 +43,13 @@
    - 记得：`go mod tidy`
    - 见test文件夹测试代码“发送验证码”
 
-
+## go-redis+go-uuid 集成 用户注册
+   - 数据库。cmd查看数据库。查看redis版本:redis-server --version / redis-cli --version
+   - 可以参考[开源三方redis库](https://github.com/redis/go-redis)进行使用，也可以使用go包的redis库。
+   - 安装：`go get github.com/redis/go-redis/v9`
+   - 记得：`go mod tidy`
+   - 见test文件夹测试代码“用户注册”
+   - 可以参考[开源三方uuid库](https://github.com/google/go.uuid)进行使用。
+   - 安装：`go get github.com/google/go.uuid`
+   - 记得：`go mod tidy`
+   - 见test文件夹测试代码“生成uuid”

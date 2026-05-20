@@ -28,6 +28,59 @@ paths:
       summary: 登录
       tags:
       - 公共方法
+  /problem-create:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 创建问题
+      parameters:
+      - description: authorization
+        in: header
+        name: authorization
+        required: true
+        type: string
+      - description: title
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: content
+        in: formData
+        name: content
+        required: true
+        type: string
+      - description: max_mem
+        in: formData
+        name: max_mem
+        type: integer
+      - description: max_runtime
+        in: formData
+        name: max_runtime
+        type: integer
+      - description: category_ids
+        in: formData
+        name: category_ids
+        type: array
+      - description: test_cases
+        in: formData
+        name: test_cases
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\'
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 创建问题
+      tags:
+      - 私有方法
   /problem-detail:
     get:
       consumes:

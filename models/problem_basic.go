@@ -23,6 +23,9 @@ type ProblemBasic struct {
 	MaxRuntime int    `gorm:"column:max_runtime;type:int(11);" json:"max_runtime"` //最大的运行时间
 	// many to many 关联
 	Categories []*CategoryBasic `gorm:"many2many:problem_category;joinForeignKey:problem_id;joinReferences:category_id" json:"categories"`
+	TestCases  []*TestCase      `gorm:"foreignKey:problem_identity;references:identity" json:"test_cases"`
+	//关联问题分类表
+	ProblemCategories []*ProblemCategory `gorm:"foreignKey:problem_id;references:id" json:"problem_categories"`
 }
 
 func (*ProblemBasic) TableName() string {

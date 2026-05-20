@@ -55,6 +55,84 @@ const docTemplate = `{
                 }
             }
         },
+        "/problem-create": {
+            "post": {
+                "description": "创建问题",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "私有方法"
+                ],
+                "summary": "创建问题",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "authorization",
+                        "name": "authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "title",
+                        "name": "title",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "content",
+                        "name": "content",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "max_mem",
+                        "name": "max_mem",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "max_runtime",
+                        "name": "max_runtime",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "array",
+                        "description": "category_ids",
+                        "name": "category_ids",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "array",
+                        "description": "test_cases",
+                        "name": "test_cases",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\\\"code\\\":200,\\\"data\\\":{\\\"count\\\":0,\\\"data\\\":[]}\\",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/problem-detail": {
             "get": {
                 "description": "获取问题详情",

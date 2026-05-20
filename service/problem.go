@@ -2,7 +2,9 @@ package service
 
 import (
 	"Gin_Gorm_OJ/define"
+	"Gin_Gorm_OJ/helper"
 	"Gin_Gorm_OJ/models"
+	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
@@ -118,3 +120,91 @@ func GetProblemList(c *gin.Context) {
 	})
 }
 */
+
+// CreateProblem
+// @Tags 私有方法
+// @Summary 创建问题
+// @Description 创建问题
+// @Param authorization header string true "authorization"
+// @Param title formData string true "title" "问题的标题"
+// @Param content formData string true "content" "问题的描述"
+// @Param max_mem formData int false "max_mem" "最大的运行内存"
+// @Param max_runtime formData int false "max_runtime" "最大的运行时间"
+// @Param category_ids formData array false "category_ids" "分类的标识"
+// @Param test_cases formData array true "test_cases" "测试用例"
+// @Accept multipart/form-data
+// @Produce json
+// @Success 200 {string} json "{\"code\":200,\"data\":{\"count\":0,\"data\":[]}\""
+// @Failure 500 {object} map[string]interface{}
+// @Router /problem-create [post]
+func CreateProblem(c *gin.Context) {
+	title := c.PostForm("title")
+	content := c.PostForm("content")
+	maxMem, _ := strconv.Atoi(c.PostForm("max_mem"))
+	maxRuntime, _ := strconv.Atoi(c.PostForm("max_runtime"))
+	categoryIds := c.PostFormArray("category_ids")
+	testCases := c.PostFormArray("test_cases")
+	if title == "" || content == "" || maxMem == 0 || maxRuntime == 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 400,
+			"msg":  "参数不能为空",
+		})
+		return
+	}
+	identity := helper.GenerateUUID()
+	data := models.ProblemBasic{
+		Title:      title,
+		Content:    content,
+		MaxMem:     maxMem,
+		MaxRuntime: maxRuntime,
+	}
+	//处理分类
+	CateGoryBasics := make([]*models.ProblemCategory, 0)
+	for _, id := range categoryIds {
+		categoryID, _ := strconv.Atoi(id)
+		CateGoryBasics = append(CateGoryBasics, &models.ProblemCategory{
+			ProblemID:  int(data.ID),
+			CategoryID: categoryID,
+		})
+	}
+	data.ProblemCategories = CateGoryBasics
+	//处理测试用例
+	testCaseBasics := make([]*models.TestCase, 0)
+	for _, tc := range testCases {
+		//例子{"input":"1,2\n","output":"3\n"}
+		caseMap := map[string]string{}
+		err := json.Unmarshal([]byte(tc), &caseMap) //这里需要转换为byte类型 ，然后解码为map[string]string
+		if err != nil {
+			log.Println("解析测试用例失败", err)
+			continue
+		}
+		if _, ok := caseMap["input"]; !ok {
+			log.Println("测试用例格式错误", tc)
+			continue
+		}
+		if _, ok := caseMap["output"]; !ok {
+			log.Println("测试用例格式错误", tc)
+			continue
+		}
+		testCaseBasics = append(testCaseBasics, &models.TestCase{
+			Identity:        helper.GenerateUUID(),
+			ProblemIdentity: identity,
+			Input:           caseMap["input"],
+			Output:          caseMap["output"],
+		})
+	}
+	data.TestCases = testCaseBasics //往问题中添加测试用例
+
+	//创建问题
+	err := models.DB.Create(&data).Error
+	if err != nil {
+		log.Println("创建问题失败", err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"data": map[string]interface{}{
+			"identity": identity,
+		},
+	})
+}

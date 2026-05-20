@@ -15,6 +15,7 @@ import (
 type UserClaims struct {
 	Identity string `json:"identity"`
 	Name     string `json:"name"`
+	IsAdmin  int    `json:"is_admin"`
 	jwt.RegisteredClaims
 }
 
@@ -25,11 +26,12 @@ func GeTMd5(str string) string {
 // 生成token
 var myKey = []byte("my_secret_key")
 
-func GenerateToken(identity, name string) (string, error) {
+func GenerateToken(identity, name string, isAdmin int) (string, error) {
 	// 测试JWT生成和验证
 	UserClaim := &UserClaims{
 		Identity:         identity,
 		Name:             name,
+		IsAdmin:          isAdmin,
 		RegisteredClaims: jwt.RegisteredClaims{},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaim)

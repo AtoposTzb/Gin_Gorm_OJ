@@ -21,6 +21,7 @@ type UserBasic struct {
 	Mail          string `gorm:"column:mail;type:varchar(100);" json:"mail"`            //用户表的邮箱
 	SubmitCount   int    `gorm:"column:submit_count;type:int;" json:"submit_count"`     //提交记录数量
 	CompleteCount int    `gorm:"column:complete_count;type:int;" json:"complete_count"` //完成题目数量
+	IsAdmin       int    `gorm:"column:is_admin;type:int;" json:"is_admin"`             //是否是管理员 0:否 1:是
 }
 
 func (*UserBasic) TableName() string {
